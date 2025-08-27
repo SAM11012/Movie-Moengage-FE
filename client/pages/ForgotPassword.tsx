@@ -7,6 +7,7 @@ import { Card } from "../components/ui/card";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { API_ENDPOINTS } from "../lib/config";
 
 const ForgotPassword: React.FC = () => {
   const { theme } = useTheme();
@@ -15,7 +16,7 @@ const ForgotPassword: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
@@ -25,7 +26,7 @@ const ForgotPassword: React.FC = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5173/api/auth/forgot-password", {
+      const response = await axios.post(API_ENDPOINTS.FORGOT_PASSWORD, {
         email,
         newPassword,
       });
@@ -33,7 +34,6 @@ const ForgotPassword: React.FC = () => {
       setEmail("");
       setNewPassword("");
       setConfirmPassword("");
-      
     } catch (err: any) {
       if (err.response?.data?.message) {
         setError(err.response.data.message);
@@ -44,14 +44,12 @@ const ForgotPassword: React.FC = () => {
       }
     } finally {
       setLoading(false);
-      navigate('/')
+      navigate("/");
     }
   };
 
   return (
-    <div
-      className={`flex items-center justify-center min-h-screen`}
-    >
+    <div className={`flex items-center justify-center min-h-screen`}>
       <Card className="w-full max-w-md p-8 shadow-lg">
         <h2
           className={`text-2xl font-bold mb-6 text-center ${
@@ -69,7 +67,7 @@ const ForgotPassword: React.FC = () => {
               id="email"
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full"
               placeholder="Enter your email"
@@ -83,7 +81,7 @@ const ForgotPassword: React.FC = () => {
               id="new-password"
               type="password"
               value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
+              onChange={(e) => setNewPassword(e.target.value)}
               required
               className="w-full"
               placeholder="Enter new password"
@@ -97,7 +95,7 @@ const ForgotPassword: React.FC = () => {
               id="confirm-password"
               type="password"
               value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
               className="w-full"
               placeholder="Confirm new password"

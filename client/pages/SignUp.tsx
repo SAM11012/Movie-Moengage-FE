@@ -10,9 +10,10 @@ import { setUser } from "@/store/userSlice";
 import { resetMovieState } from "@/store/movieSlice";
 import { toast } from "sonner";
 import axios from "axios";
+import { API_ENDPOINTS } from "../lib/config";
 export default function SignUpPage() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -20,11 +21,11 @@ export default function SignUpPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    agreeToTerms: false
+    agreeToTerms: false,
   });
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,11 +48,11 @@ export default function SignUpPage() {
           role: string;
           isActive: boolean;
         };
-      }>("http://localhost:5173/api/auth/register", {
-        email:formData.email,
-        password:formData.password,
+      }>(API_ENDPOINTS.REGISTER, {
+        email: formData.email,
+        password: formData.password,
       });
-       // @ts-ignore
+      // @ts-ignore
       dispatch(setUser(response.data.data));
       dispatch(resetMovieState());
       window.location.href = "/";
@@ -77,7 +78,9 @@ export default function SignUpPage() {
             <h1 className="text-2xl font-semibold text-foreground mb-2">
               Join MovieFlix
             </h1>
-            <p className="text-muted-foreground">Create your account to get started</p>
+            <p className="text-muted-foreground">
+              Create your account to get started
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -124,7 +127,9 @@ export default function SignUpPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-10"
                   required
                 />
@@ -153,7 +158,9 @@ export default function SignUpPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("confirmPassword", e.target.value)
+                  }
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-10"
                   required
                 />
@@ -176,18 +183,26 @@ export default function SignUpPage() {
               <Checkbox
                 id="terms"
                 checked={formData.agreeToTerms}
-                onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked as boolean)}
+                onCheckedChange={(checked) =>
+                  handleInputChange("agreeToTerms", checked as boolean)
+                }
               />
               <Label
                 htmlFor="terms"
                 className="text-sm text-muted-foreground cursor-pointer"
               >
                 I agree to the{" "}
-                <Link to="/terms" className="text-brand-red hover:text-brand-red-hover">
+                <Link
+                  to="/terms"
+                  className="text-brand-red hover:text-brand-red-hover"
+                >
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link to="/privacy" className="text-brand-red hover:text-brand-red-hover">
+                <Link
+                  to="/privacy"
+                  className="text-brand-red hover:text-brand-red-hover"
+                >
                   Privacy Policy
                 </Link>
               </Label>

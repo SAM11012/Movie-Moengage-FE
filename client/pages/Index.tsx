@@ -11,6 +11,7 @@ import { setUser } from "../store/userSlice";
 import { resetMovieState } from "../store/movieSlice";
 import type { AppDispatch, RootState } from "../store";
 import { toast } from "sonner";
+import { API_ENDPOINTS } from "../lib/config";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,11 +32,11 @@ export default function LoginPage() {
           role: string;
           isActive: boolean;
         };
-      }>("http://localhost:5173/api/auth/login", {
+      }>(API_ENDPOINTS.LOGIN, {
         email,
         password,
       });
-      console.log(response)
+      console.log(response);
       // @ts-ignore
       dispatch(setUser(response.data.data));
       dispatch(resetMovieState());

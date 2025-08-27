@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { toast } from "sonner";
+import { API_ENDPOINTS } from "../lib/config";
 import {
   Select,
   SelectContent,
@@ -71,7 +72,7 @@ export default function HomePage() {
       setError("");
       try {
         const response = await axios.get<{ data: { movies: Movie[] } }>(
-          "http://localhost:5173/api/movies/trending",
+          API_ENDPOINTS.MOVIES_TRENDING,
         );
         console.log(response.data);
         dispatch(setMovies(response.data.data.movies || []));
@@ -93,7 +94,7 @@ export default function HomePage() {
     setError("");
     try {
       const response = await axios.get<{ data: { movies: Movie[] } }>(
-        `http://localhost:5173/api/movies/search?search=${encodeURIComponent(searchQuery)}&page=1`,
+        `${API_ENDPOINTS.MOVIES_SEARCH}?search=${encodeURIComponent(searchQuery)}&page=1`,
       );
       dispatch(setMovies(response.data.data.movies || []));
     } catch (err: any) {
@@ -176,22 +177,22 @@ export default function HomePage() {
             <div className="flex-1 max-w-lg">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-<Input
-  type="text"
-  placeholder="Search movies..."
-  value={searchQuery}
-  onChange={(e) => {
-    const value = e.target.value;
-    dispatch(setSearchQuery(value));
-    if (!value.trim()) {
-      dispatch(setMovies([]));
-    }
-  }}
-  onKeyDown={(e) => {
-    if (e.key === "Enter") handleSearch();
-  }}
-  className="pl-10 bg-input border-border text-foreground placeholder:text-muted-foreground"
-/>
+                <Input
+                  type="text"
+                  placeholder="Search movies..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    dispatch(setSearchQuery(value));
+                    if (!value.trim()) {
+                      dispatch(setMovies([]));
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSearch();
+                  }}
+                  className="pl-10 bg-input border-border text-foreground placeholder:text-muted-foreground"
+                />
               </div>
             </div>
 

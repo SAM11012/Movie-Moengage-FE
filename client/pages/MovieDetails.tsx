@@ -5,6 +5,7 @@ import { Play, Plus, Share } from "lucide-react";
 import Header from "@/components/Header";
 import axios from "axios";
 import { useTheme } from "@/contexts/ThemeContext";
+import { API_ENDPOINTS } from "../lib/config";
 
 interface Movie {
   imdbID: string;
@@ -39,7 +40,7 @@ export default function MovieDetailsPage() {
       setError(null);
       try {
         const response = await axios.get<{ data: Movie }>(
-          `http://localhost:5173/api/movies/${id}`,
+          API_ENDPOINTS.MOVIE_DETAILS(id!),
         );
         setMovie(response.data.data);
       } catch (err: any) {
@@ -79,7 +80,6 @@ export default function MovieDetailsPage() {
         backText="Back"
         showActions={true}
         title="Movie Details"
-        
       />
 
       {/* Hero Section */}
@@ -93,10 +93,14 @@ export default function MovieDetailsPage() {
 
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="max-w-7xl mx-auto">
-            <h1 className={`text-4xl md:text-6xl font-bold mb-4 ${theme === "light" ? "text-black" : "text-white"}`}>
+            <h1
+              className={`text-4xl md:text-6xl font-bold mb-4 ${theme === "light" ? "text-black" : "text-white"}`}
+            >
               {movie.title}
             </h1>
-            <div className={`flex flex-wrap items-center gap-4 mb-6 ${theme === "light" ? "text-black" : "text-white/90"}`}>
+            <div
+              className={`flex flex-wrap items-center gap-4 mb-6 ${theme === "light" ? "text-black" : "text-white/90"}`}
+            >
               <span className="flex items-center space-x-1">
                 <span>📅</span>
                 <span>{movie.year}</span>
@@ -128,18 +132,26 @@ export default function MovieDetailsPage() {
 
             <div className="flex items-center space-x-1 mb-6">
               <span className="text-yellow-400 text-xl">★</span>
-              <span className={`font-medium ml-2 ${theme === "light" ? "text-black" : "text-white"}`}>
+              <span
+                className={`font-medium ml-2 ${theme === "light" ? "text-black" : "text-white"}`}
+              >
                 {movie.imdbRating}/10
               </span>
-              <span className={`ml-2 ${theme === "light" ? "text-black" : "text-white/70"}`}>
+              <span
+                className={`ml-2 ${theme === "light" ? "text-black" : "text-white/70"}`}
+              >
                 ({movie.imdbVotes} votes)
               </span>
-              <span className={`ml-2 ${theme === "light" ? "text-black" : "text-white/70"}`}>
+              <span
+                className={`ml-2 ${theme === "light" ? "text-black" : "text-white/70"}`}
+              >
                 Metascore: {movie.metascore}
               </span>
             </div>
 
-            <p className={`max-w-2xl text-lg mb-8 ${theme === "light" ? "text-black" : "text-white/90"}`}>
+            <p
+              className={`max-w-2xl text-lg mb-8 ${theme === "light" ? "text-black" : "text-white/90"}`}
+            >
               {movie.plot.slice(0, 105) + "..."}
             </p>
 

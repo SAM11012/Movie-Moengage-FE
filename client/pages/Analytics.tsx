@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, Users, Eye, Star } from "lucide-react";
 import Header from "@/components/Header";
 import { useTheme } from "@/contexts/ThemeContext";
+import { API_ENDPOINTS } from "../lib/config";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -34,56 +35,112 @@ ChartJS.register(
 
 export default function AnalyticsPage() {
   const { theme } = useTheme();
-  const stats = [
-    {
-      title: "Total Movies",
-      value: "15,420",
-      change: "+5.5% from last month",
-      icon: TrendingUp,
-      color: "text-blue-400",
-    },
-    {
-      title: "Total Users",
-      value: "89,340",
-      change: "+12.3% from last month",
-      icon: Users,
-      color: "text-green-400",
-    },
-    {
-      title: "Total Views",
-      value: "2.3M",
-      change: "+8.7% last month",
-      icon: Eye,
-      color: "text-purple-400",
-    },
-    {
-      title: "Avg Rating",
-      value: "7.8/10",
-      change: "+0.3% from last month",
-      icon: Star,
-      color: "text-yellow-400",
-    },
-  ];
 
-  const topMovies = [
-    { rank: 1, title: "The Shawshank Redemption", rating: 9.3 },
-    { rank: 2, title: "The Dark Knight", rating: 9.1 },
-    { rank: 3, title: "Pulp Fiction", rating: 8.9 },
-    { rank: 4, title: "Fight Club", rating: 8.8 },
-    { rank: 5, title: "Inception", rating: 8.8 },
-  ];
 
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const user = useSelector((state: RootState) => state.user.user);
+
+  const stats =
+    dashboardData && dashboardData.overview
+      ? [
+          {
+            title: "Total Movies",
+            value: dashboardData.overview.totalMovies ?? "N/A",
+            icon: TrendingUp,
+            color: "text-blue-400",
+          },
+          {
+            title: "Avg Rating",
+            value: dashboardData.overview.avgRating ?? "N/A",
+            icon: Star,
+            color: "text-yellow-400",
+          },
+          {
+            title: "Avg Runtime",
+            value: dashboardData.overview.avgRuntime
+              ? `${dashboardData.overview.avgRuntime} min`
+              : "N/A",
+            icon: Eye,
+            color: "text-purple-400",
+          },
+          {
+            title: "Year Range",
+            value: dashboardData.overview.yearRange ?? "N/A",
+            icon: Users,
+            color: "text-green-400",
+          },
+          {
+            title: "Unique Genres",
+            value: dashboardData.overview.uniqueGenres ?? "N/A",
+            icon: Users,
+            color: "text-blue-400",
+          },
+          {
+            title: "Rating Range",
+            value: dashboardData.overview.ratingRange ?? "N/A",
+            icon: Star,
+            color: "text-yellow-400",
+          },
+        ]
+      : [
+          {
+            title: "Total Movies",
+            value: "N/A",
+            icon: TrendingUp,
+            color: "text-blue-400",
+          },
+          {
+            title: "Avg Rating",
+            value: "N/A",
+            icon: Star,
+            color: "text-yellow-400",
+          },
+          {
+            title: "Avg Runtime",
+            value: "N/A",
+            icon: Eye,
+            color: "text-purple-400",
+          },
+          {
+            title: "Year Range",
+            value: "N/A",
+            icon: Users,
+            color: "text-green-400",
+          },
+          {
+            title: "Unique Genres",
+            value: "N/A",
+            icon: Users,
+            color: "text-blue-400",
+          },
+          {
+            title: "Rating Range",
+            value: "N/A",
+            icon: Star,
+            color: "text-yellow-400",
+          },
+        ];
+
+  // Adjust top rated movies from dashboardData
+  const topMovies =
+    dashboardData && dashboardData.topMovies
+      ? [...dashboardData.topMovies]
+          .sort((a, b) => b.rating - a.rating)
+          .slice(0, 5)
+          .map((movie, idx) => ({
+            ...movie,
+            rank: idx + 1,
+          }))
+      : [];
   useEffect(() => {
     async function fetchDashboard() {
       setLoading(true);
       setError(null);
       try {
         const response = await axios.get<{ data: any }>(
-          "http://localhost:5173/api/analytics/dashboard",
+          API_ENDPOINTS.ANALYTICS_DASHBOARD,
         );
         setDashboardData(response.data.data);
       } catch (err: any) {
@@ -320,20 +377,20 @@ export default function AnalyticsPage() {
       ) : (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Stats Cards */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => (
             <div key={stat.title} className="card-gradient border border-border rounded-lg p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">{stat.title}</p>
                   <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                  <p className="text-sm text-green-400 mt-1">{stat.change}</p>
+                 
                 </div>
-                <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                {/* <stat.icon className={`h-8 w-8 ${stat.color}`} /> */}
               </div>
             </div>
           ))}
-        </div> */}
+        </div>
 
           {/* Navigation Tabs */}
           {/* <div className="border-b border-border mb-8">
@@ -380,6 +437,79 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Genre Distribution */}
+            <div
+              className={`${theme === "light" ? "bg-white" : "card-gradient"} border border-border rounded-lg p-6`}
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-6">
+                Average Ratings by Genre
+              </h3>
+              <p className="text-muted-foreground text-sm mb-4">
+                Average IMDB ratings for each genre
+              </p>
+              {loading ? (
+                <div className="h-64 flex items-center justify-center">
+                  <span className="text-muted-foreground">
+                    Loading ratings by genre...
+                  </span>
+                </div>
+              ) : error ? (
+                <div className="h-64 flex items-center justify-center">
+                  <span className="text-destructive">Error: {error}</span>
+                </div>
+              ) : (
+                <div className="h-64">
+                  <Bar data={barChartData} options={barChartOptions} />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Additional Sections */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Top Rated Movies */}
+            <div
+              className={`${theme === "light" ? "bg-white" : "card-gradient"} border border-border rounded-lg p-6`}
+            >
+              <h3 className="text-lg font-semibold text-foreground mb-6">
+                Top Rated Movies
+              </h3>
+              <p className="text-muted-foreground text-sm mb-4">
+                Highest rated content
+              </p>
+
+              <div className="space-y-3">
+                {topMovies.length === 0 ? (
+                  <div className="text-muted-foreground text-center py-4">
+                    No top rated movies available.
+                  </div>
+                ) : (
+                  topMovies.map((movie) => (
+                    <div
+                      key={movie.rank}
+                      className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className="w-6 h-6 bg-brand-red rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          {movie.rank}
+                        </span>
+                        <span className="text-foreground font-medium">
+                          {movie.title}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Star className="h-4 w-4 text-yellow-400" />
+                        <span className="text-foreground font-medium">
+                          {movie.rating}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Average Ratings by Genre */}
+
             <div
               className={`${theme === "light" ? "bg-white" : "card-gradient"} border border-border rounded-lg p-6`}
             >
@@ -432,72 +562,6 @@ export default function AnalyticsPage() {
                     ))}
                   </div>
                 </>
-              )}
-            </div>
-          </div>
-
-          {/* Additional Sections */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Top Rated Movies */}
-            <div
-              className={`${theme === "light" ? "bg-white" : "card-gradient"} border border-border rounded-lg p-6`}
-            >
-              <h3 className="text-lg font-semibold text-foreground mb-6">
-                Top Rated Movies
-              </h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Highest rated content
-              </p>
-
-              <div className="space-y-3">
-                {topMovies.map((movie) => (
-                  <div
-                    key={movie.rank}
-                    className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <span className="w-6 h-6 bg-brand-red rounded-full flex items-center justify-center text-white text-sm font-bold">
-                        {movie.rank}
-                      </span>
-                      <span className="text-foreground font-medium">
-                        {movie.title}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 text-yellow-400" />
-                      <span className="text-foreground font-medium">
-                        {movie.rating}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Average Ratings by Genre */}
-            <div
-              className={`${theme === "light" ? "bg-white" : "card-gradient"} border border-border rounded-lg p-6`}
-            >
-              <h3 className="text-lg font-semibold text-foreground mb-6">
-                Average Ratings by Genre
-              </h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Average IMDB ratings for each genre
-              </p>
-              {loading ? (
-                <div className="h-64 flex items-center justify-center">
-                  <span className="text-muted-foreground">
-                    Loading ratings by genre...
-                  </span>
-                </div>
-              ) : error ? (
-                <div className="h-64 flex items-center justify-center">
-                  <span className="text-destructive">Error: {error}</span>
-                </div>
-              ) : (
-                <div className="h-64">
-                  <Bar data={barChartData} options={barChartOptions} />
-                </div>
               )}
             </div>
           </div>
