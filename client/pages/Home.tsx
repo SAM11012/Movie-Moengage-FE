@@ -4,7 +4,7 @@ import type { RootState } from "@/store";
 import {
   setMovies,
   setSearchQuery,
-  setSelectedGenre,
+  setSelectedGenres,
   setSortBy,
   setSortDirection,
 } from "@/store/movieSlice";
@@ -24,7 +24,57 @@ import { Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import CenteredSpinner from "@/components/CenteredSpinner";
+import MultiSelectGenre from "@/components/MultiSelectGenre";
 import dummyposter from "../assets/dummyposter.jpg";
+
+function downloadMoviesCSV(movies: Movie[]) {
+  if (!movies.length) return;
+  const headers = [
+    "Title",
+    "Year",
+    "Genres",
+    "Director",
+    "Actors",
+    "IMDB Rating",
+    "Runtime",
+    "Language",
+    "Country",
+    "Awards",
+  ];
+  const rows = movies.map((movie) => [
+    movie.title,
+    movie.year,
+    Array.isArray(movie.genre) ? movie.genre.join("; ") : "",
+    movie.director,
+    Array.isArray(movie.actors) ? movie.actors.join("; ") : "",
+    movie.imdbRating,
+    movie.runtime,
+    movie.language,
+    movie.country,
+    movie.awards,
+  ]);
+  const csvContent = [headers, ...rows]
+    .map((row) =>
+      row
+        .map((field) =>
+          typeof field === "string" &&
+          (field.includes(",") || field.includes('"') || field.includes("\n"))
+            ? `"${field.replace(/"/g, '""')}"`
+            : field,
+        )
+        .join(","),
+    )
+    .join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "movies.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 interface Movie {
   imdbID: string;
@@ -54,8 +104,8 @@ export default function HomePage() {
   const searchQuery = useSelector(
     (state: RootState) => state.movie.searchQuery,
   );
-  const selectedGenre = useSelector(
-    (state: RootState) => state.movie.selectedGenre,
+  const selectedGenres = useSelector(
+    (state: RootState) => state.movie.selectedGenres,
   );
   const sortBy = useSelector((state: RootState) => state.movie.sortBy);
   const sortDirection = useSelector(
@@ -95,9 +145,11 @@ export default function HomePage() {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get<{ data: { movies: Movie[] } }>(
-        `${API_ENDPOINTS.MOVIES_SEARCH}?search=${encodeURIComponent(searchQuery)}&page=1`,
-      );
+      let url = `${API_ENDPOINTS.MOVIES_SEARCH}?search=${encodeURIComponent(searchQuery)}&page=1`;
+      if (sortBy === "rating") {
+        url += "&sort=rating";
+      }
+      const response = await axios.get<{ data: { movies: Movie[] } }>(url);
       dispatch(setMovies(response.data.data.movies || []));
       toast.success("Search results loaded!");
     } catch (err: any) {
@@ -109,6 +161,7 @@ export default function HomePage() {
   };
 
   const filteredAndSortedMovies = useMemo(() => {
+    if (!Array.isArray(movies)) return [];
     // Create a new array to avoid mutating the original
     let filtered = [...movies].filter((movie) => {
       const genreArr = Array.isArray(movie.genre) ? movie.genre : [];
@@ -119,8 +172,10 @@ export default function HomePage() {
         );
 
       const matchesGenre =
-        selectedGenre === "all" ||
-        genreArr.some((g) => g.toLowerCase() === selectedGenre.toLowerCase());
+        selectedGenres.length === 0 ||
+        selectedGenres.some((selected) =>
+          genreArr.some((g) => g.toLowerCase() === selected.toLowerCase())
+        );
 
       return matchesSearch && matchesGenre;
     });
@@ -156,7 +211,7 @@ export default function HomePage() {
     }
 
     return filtered;
-  }, [movies, searchQuery, selectedGenre, sortBy, sortDirection]);
+  }, [movies, searchQuery, selectedGenres, sortBy, sortDirection]) || [];
 
   // Removed unused toggleSortDirection and handleSortChange functions
 
@@ -175,9 +230,9 @@ export default function HomePage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search and Filter Section */}
         <div className="flex flex-col gap-4 mb-8">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             {/* Search Bar */}
-            <div className="flex-1 max-w-lg">
+            <div className="flex-1 lg:max-w-lg w-full">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
@@ -199,22 +254,29 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Genre Filter */}
-            <Select
-              value={selectedGenre}
-              onValueChange={(val) => dispatch(setSelectedGenre(val))}
-            >
-              <SelectTrigger className="w-40 bg-input border-border text-foreground">
-                <SelectValue placeholder="All Genres" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Genres</SelectItem>
-                <SelectItem value="action">Action</SelectItem>
-                <SelectItem value="drama">Drama</SelectItem>
-                <SelectItem value="crime">Crime</SelectItem>
-                <SelectItem value="science fiction">Science Fiction</SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Genre Filter & Download Button Row */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto md:ml-4">
+              <MultiSelectGenre
+                genres={[
+                  "Action",
+                  "Drama",
+                  "Crime",
+                  "Science Fiction",
+                  // Add more genres as needed
+                ]}
+                selected={selectedGenres}
+                onChange={(vals) => dispatch(setSelectedGenres(vals))}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => downloadMoviesCSV(filteredAndSortedMovies)}
+                disabled={filteredAndSortedMovies.length === 0}
+                className="sm:ml-2"
+              >
+                Download CSV
+              </Button>
+            </div>
           </div>
 
           {/* Sorting Controls */}

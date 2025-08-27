@@ -26,7 +26,7 @@ export type SortDirection = "asc" | "desc";
 export interface MovieState {
   movies: Movie[];
   searchQuery: string;
-  selectedGenre: string;
+  selectedGenres: string[];
   sortBy: SortOption;
   sortDirection: SortDirection;
 }
@@ -34,7 +34,7 @@ export interface MovieState {
 const initialState: MovieState = {
   movies: [],
   searchQuery: "",
-  selectedGenre: "all",
+  selectedGenres: [],
   sortBy: "none",
   sortDirection: "desc",
 };
@@ -49,8 +49,8 @@ const movieSlice = createSlice({
     setSearchQuery(state, action: PayloadAction<string>) {
       state.searchQuery = action.payload;
     },
-    setSelectedGenre(state, action: PayloadAction<string>) {
-      state.selectedGenre = action.payload;
+    setSelectedGenres(state, action: PayloadAction<string[]>) {
+      state.selectedGenres = action.payload;
     },
     setSortBy(state, action: PayloadAction<SortOption>) {
       state.sortBy = action.payload;
@@ -61,7 +61,7 @@ const movieSlice = createSlice({
     resetMovieState(state) {
       state.movies = [];
       state.searchQuery = "";
-      state.selectedGenre = "all";
+      state.selectedGenres = [];
       state.sortBy = "none";
       state.sortDirection = "desc";
     },
@@ -71,7 +71,7 @@ const movieSlice = createSlice({
 export const {
   setMovies,
   setSearchQuery,
-  setSelectedGenre,
+  setSelectedGenres,
   setSortBy,
   setSortDirection,
   resetMovieState,
