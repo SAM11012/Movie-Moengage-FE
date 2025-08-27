@@ -11,11 +11,14 @@ import { resetMovieState } from "@/store/movieSlice";
 import { toast } from "sonner";
 import axios from "axios";
 import { API_ENDPOINTS } from "../lib/config";
+import ScreenLoader from "@/components/ScreenLoader";
+import { setEngine } from "crypto";
 export default function SignUpPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,6 +43,7 @@ export default function SignUpPage() {
     }
     // Navigate to home page after signup
     try {
+      setIsLoading(true);
       const response = await axios.post<{
         token: string;
         user: {
@@ -55,6 +59,14 @@ export default function SignUpPage() {
       // @ts-ignore
       dispatch(setUser(response.data.data));
       dispatch(resetMovieState());
+      toast.success("Account created successfully!");
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        agreeToTerms: false,
+      });
       window.location.href = "/";
     } catch (error: any) {
       const message =
@@ -63,11 +75,14 @@ export default function SignUpPage() {
         "Unknown error";
       toast.error(`Login failed: ${message}`);
       console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      {isLoading && <ScreenLoader />}
       <div className="w-full max-w-md">
         <div className="bg-card border border-border rounded-lg p-8 shadow-2xl">
           {/* MovieFlix Logo */}

@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { User, LogOut, Moon, Sun, Settings } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { toast } from "sonner";
 
 interface AvatarMenuProps {
   userName?: string;
@@ -44,9 +45,11 @@ export default function AvatarMenu({
       dispatch(resetMovieState());
       localStorage.removeItem("movieflix-user");
       window.location.href = "/";
+      toast("Logout successfull");
     } catch (error) {
       // Optionally handle error (e.g., show a toast)
       console.error("Logout failed", error);
+      toast("Error in getting logout");
     }
   };
 

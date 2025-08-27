@@ -23,6 +23,7 @@ import {
 import { Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
+import CenteredSpinner from "@/components/CenteredSpinner";
 import dummyposter from "../assets/dummyposter.jpg";
 
 interface Movie {
@@ -76,6 +77,7 @@ export default function HomePage() {
         );
         console.log(response.data);
         dispatch(setMovies(response.data.data.movies || []));
+        toast.success("Trending movies loaded!");
       } catch (err: any) {
         setError("Failed to fetch trending movies.");
         toast.error("Failed to fetch trending movies.");
@@ -84,7 +86,7 @@ export default function HomePage() {
       }
     };
     if (movies.length == 0) {
-      fetchTrending();
+      // fetchTrending();
     }
   }, []);
 
@@ -97,6 +99,7 @@ export default function HomePage() {
         `${API_ENDPOINTS.MOVIES_SEARCH}?search=${encodeURIComponent(searchQuery)}&page=1`,
       );
       dispatch(setMovies(response.data.data.movies || []));
+      toast.success("Search results loaded!");
     } catch (err: any) {
       setError("Failed to fetch search results.");
       toast.error("Failed to fetch search results.");
@@ -301,9 +304,7 @@ export default function HomePage() {
 
         {/* Movies Grid */}
         {loading ? (
-          <div className="text-center py-10 text-lg text-muted-foreground">
-            ✅ Loading movies...
-          </div>
+          <CenteredSpinner />
         ) : error ? (
           <div className="text-center py-10 text-lg text-red-500">{error}</div>
         ) : !searchQuery.trim() ? (

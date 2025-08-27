@@ -12,18 +12,21 @@ import { resetMovieState } from "../store/movieSlice";
 import type { AppDispatch, RootState } from "../store";
 import { toast } from "sonner";
 import { API_ENDPOINTS } from "../lib/config";
+import ScreenLoader from "@/components/ScreenLoader";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       const response = await axios.post<{
         token: string;
         user: {
@@ -40,6 +43,9 @@ export default function LoginPage() {
       // @ts-ignore
       dispatch(setUser(response.data.data));
       dispatch(resetMovieState());
+      toast('Login sucessfull')
+      setEmail('')
+      setPassword('')
       navigate("/");
     } catch (error: any) {
       const message =
@@ -48,11 +54,14 @@ export default function LoginPage() {
         "Unknown error";
       toast.error(`Login failed: ${message}`);
       console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      {isLoading && <ScreenLoader />}
       <div className="w-full max-w-md">
         <div className="bg-card border border-border rounded-lg p-8 shadow-2xl">
           {/* MovieFlix Logo */}

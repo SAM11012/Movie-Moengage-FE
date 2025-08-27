@@ -10,7 +10,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Provider } from "react-redux";
 import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
-import Index from "./pages/Index";
+import Index from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 import MovieDetails from "./pages/MovieDetails";

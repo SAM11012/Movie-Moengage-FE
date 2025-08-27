@@ -5,7 +5,9 @@ import { Play, Plus, Share } from "lucide-react";
 import Header from "@/components/Header";
 import axios from "axios";
 import { useTheme } from "@/contexts/ThemeContext";
+import ScreenLoader from "@/components/ScreenLoader";
 import { API_ENDPOINTS } from "../lib/config";
+import { toast } from "sonner";
 
 interface Movie {
   imdbID: string;
@@ -43,8 +45,10 @@ export default function MovieDetailsPage() {
           API_ENDPOINTS.MOVIE_DETAILS(id!),
         );
         setMovie(response.data.data);
+        toast.success("Movie details loaded!");
       } catch (err: any) {
         setError(err.message || "Unknown error");
+        toast.error(err.message || "Failed to load movie details.");
       } finally {
         setLoading(false);
       }
@@ -53,13 +57,7 @@ export default function MovieDetailsPage() {
   }, [id]);
   console.log(movie);
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <span className="text-lg text-muted-foreground">
-          Loading movie details...
-        </span>
-      </div>
-    );
+    return <ScreenLoader />;
   }
 
   if (error || !movie) {

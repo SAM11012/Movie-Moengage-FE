@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, Users, Eye, Star } from "lucide-react";
 import Header from "@/components/Header";
 import { useTheme } from "@/contexts/ThemeContext";
+import ScreenLoader from "@/components/ScreenLoader";
 import { API_ENDPOINTS } from "../lib/config";
+import { toast } from "sonner";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -143,8 +145,10 @@ export default function AnalyticsPage() {
           API_ENDPOINTS.ANALYTICS_DASHBOARD,
         );
         setDashboardData(response.data.data);
+        toast.success("Dashboard loaded!");
       } catch (err: any) {
         setError(err.message || "Unknown error");
+        toast.error(err.message || "Failed to load dashboard.");
       } finally {
         setLoading(false);
       }
@@ -376,6 +380,7 @@ export default function AnalyticsPage() {
         </div>
       ) : (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {loading && <ScreenLoader />}
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => (
@@ -419,13 +424,7 @@ export default function AnalyticsPage() {
               <p className="text-muted-foreground text-sm mb-6">
                 Yearly average runtime (minutes)
               </p>
-              {loading ? (
-                <div className="h-64 flex items-center justify-center">
-                  <span className="text-muted-foreground">
-                    Loading average runtime by year...
-                  </span>
-                </div>
-              ) : error ? (
+              {error ? (
                 <div className="h-64 flex items-center justify-center">
                   <span className="text-destructive">Error: {error}</span>
                 </div>
@@ -446,13 +445,7 @@ export default function AnalyticsPage() {
               <p className="text-muted-foreground text-sm mb-4">
                 Average IMDB ratings for each genre
               </p>
-              {loading ? (
-                <div className="h-64 flex items-center justify-center">
-                  <span className="text-muted-foreground">
-                    Loading ratings by genre...
-                  </span>
-                </div>
-              ) : error ? (
+              {error ? (
                 <div className="h-64 flex items-center justify-center">
                   <span className="text-destructive">Error: {error}</span>
                 </div>
@@ -520,13 +513,7 @@ export default function AnalyticsPage() {
                 Movies by genre
               </p>
 
-              {loading ? (
-                <div className="h-48 flex items-center justify-center mb-4">
-                  <span className="text-muted-foreground">
-                    Loading genre distribution...
-                  </span>
-                </div>
-              ) : error ? (
+              {error ? (
                 <div className="h-48 flex items-center justify-center mb-4">
                   <span className="text-destructive">Error: {error}</span>
                 </div>
