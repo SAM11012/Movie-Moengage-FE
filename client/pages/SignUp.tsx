@@ -19,6 +19,7 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -33,6 +34,14 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    } else {
+      setEmailError(null);
+    }
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords don't match!");
       return;
@@ -129,6 +138,9 @@ export default function SignUpPage() {
                 className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                 required
               />
+              {emailError && (
+                <div className="text-red-500 text-xs mt-1">{emailError}</div>
+              )}
             </div>
 
             {/* Password Field */}

@@ -20,11 +20,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    } else {
+      setEmailError(null);
+    }
     try {
       setIsLoading(true);
       const response = await axios.post<{
@@ -90,6 +99,9 @@ export default function LoginPage() {
                 className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                 required
               />
+              {emailError && (
+                <div className="text-red-500 text-xs mt-1">{emailError}</div>
+              )}
             </div>
 
             {/* Password Field */}

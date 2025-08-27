@@ -13,6 +13,7 @@ import { API_ENDPOINTS } from "../lib/config";
 const ForgotPassword: React.FC = () => {
   const { theme } = useTheme();
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -22,6 +23,14 @@ const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    } else {
+      setEmailError(null);
+    }
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -75,6 +84,9 @@ const ForgotPassword: React.FC = () => {
               className="w-full"
               placeholder="Enter your email"
             />
+            {emailError && (
+              <div className="text-red-500 text-xs mt-1">{emailError}</div>
+            )}
           </div>
           <div>
             <Label htmlFor="new-password" className="mb-2 block">

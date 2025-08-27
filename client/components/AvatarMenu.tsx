@@ -76,10 +76,10 @@ export default function AvatarMenu({
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
-            <p className="w-[200px] truncate font-medium text-foreground ">
+            <p className=" font-medium text-foreground">{userName}</p>
+            <p className="w-[200px] truncate text-sm text-muted-foreground ">
               {userEmail}
             </p>
-            <p className="text-sm text-muted-foreground">{userName}</p>
           </div>
         </div>
         <DropdownMenuSeparator />
