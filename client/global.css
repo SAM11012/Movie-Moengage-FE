@@ -1,0 +1,134 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 0 84% 50%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 0 84% 50%;
+
+    --radius: 0.5rem;
+
+    --brand-red: 0 84% 50%;
+    --brand-red-hover: 0 84% 55%;
+    --brand-red-dark: 0 60% 35%;
+    --brand-red-darker: 0 50% 25%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 0 84% 50%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 0 84% 50%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 50% 8%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 50% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 84% 50%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 30% 12%;
+    --secondary-foreground: 0 0% 80%;
+
+    --muted: 0 30% 12%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 0 50% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 30% 15%;
+    --input: 0 30% 15%;
+    --ring: 0 84% 50%;
+
+    --brand-red: 0 84% 50%;
+    --brand-red-hover: 0 84% 55%;
+    --brand-red-dark: 0 60% 35%;
+    --brand-red-darker: 0 50% 25%;
+
+    --sidebar-background: 0 50% 8%;
+    --sidebar-foreground: 0 0% 80%;
+    --sidebar-primary: 0 84% 50%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 30% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 30% 15%;
+    --sidebar-ring: 0 84% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen;
+    font-family: 'Inter', sans-serif;
+  }
+
+  body.light {
+    @apply bg-gradient-to-br from-slate-50 to-red-50;
+  }
+
+  body.dark {
+    @apply bg-gradient-to-br from-black to-red-950;
+  }
+
+  .movieflix-red {
+    @apply bg-brand-red hover:bg-brand-red-hover;
+  }
+
+  .gradient-bg {
+    @apply bg-gradient-to-br from-black via-red-950 to-red-900;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-br from-red-950/30 to-red-900/20 backdrop-blur-sm;
+  }
+}
