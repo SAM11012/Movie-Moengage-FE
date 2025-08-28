@@ -38,7 +38,6 @@ ChartJS.register(
 export default function AnalyticsPage() {
   const { theme } = useTheme();
 
-
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -148,7 +147,11 @@ export default function AnalyticsPage() {
         toast.success("Dashboard loaded!");
       } catch (err: any) {
         setError(err.message || "Unknown error");
-        toast.error(err.message || "Failed to load dashboard.");
+        toast.error(
+          err?.response?.data?.message ||
+            err.message ||
+            "Failed to load dashboard.",
+        );
       } finally {
         setLoading(false);
       }
@@ -383,19 +386,25 @@ export default function AnalyticsPage() {
           {loading && <ScreenLoader />}
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat) => (
-            <div key={stat.title} className="card-gradient border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm">{stat.title}</p>
-                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                 
+            {stats.map((stat) => (
+              <div
+                key={stat.title}
+                className="card-gradient border border-border rounded-lg p-6"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-muted-foreground text-sm">
+                      {stat.title}
+                    </p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {stat.value}
+                    </p>
+                  </div>
+                  {/* <stat.icon className={`h-8 w-8 ${stat.color}`} /> */}
                 </div>
-                {/* <stat.icon className={`h-8 w-8 ${stat.color}`} /> */}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
           {/* Navigation Tabs */}
           {/* <div className="border-b border-border mb-8">

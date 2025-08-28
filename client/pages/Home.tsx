@@ -130,7 +130,7 @@ export default function HomePage() {
         toast.success("Trending movies loaded!");
       } catch (err: any) {
         setError("Failed to fetch trending movies.");
-        toast.error("Failed to fetch trending movies.");
+        toast.error(err?.response?.data?.message||"Failed to fetch trending movies.");
       } finally {
         setLoading(false);
       }
@@ -153,65 +153,69 @@ export default function HomePage() {
       dispatch(setMovies(response.data.data.movies || []));
       toast.success("Search results loaded!");
     } catch (err: any) {
+      console.log(err.response.data.message);
       setError("Failed to fetch search results.");
-      toast.error("Failed to fetch search results.");
+      toast.error(
+        err?.response?.data?.message || "Failed to fetch search results.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredAndSortedMovies = useMemo(() => {
-    if (!Array.isArray(movies)) return [];
-    // Create a new array to avoid mutating the original
-    let filtered = [...movies].filter((movie) => {
-      const genreArr = Array.isArray(movie.genre) ? movie.genre : [];
-      const matchesSearch =
-        movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        genreArr.some((g) =>
-          g.toLowerCase().includes(searchQuery.toLowerCase()),
-        );
+  const filteredAndSortedMovies =
+    useMemo(() => {
+      if (!Array.isArray(movies)) return [];
+      // Create a new array to avoid mutating the original
+      let filtered = [...movies].filter((movie) => {
+        const genreArr = Array.isArray(movie.genre) ? movie.genre : [];
+        const matchesSearch =
+          movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          genreArr.some((g) =>
+            g.toLowerCase().includes(searchQuery.toLowerCase()),
+          );
 
-      const matchesGenre =
-        selectedGenres.length === 0 ||
-        selectedGenres.some((selected) =>
-          genreArr.some((g) => g.toLowerCase() === selected.toLowerCase())
-        );
+        const matchesGenre =
+          selectedGenres.length === 0 ||
+          selectedGenres.some((selected) =>
+            genreArr.some((g) => g.toLowerCase() === selected.toLowerCase()),
+          );
 
-      return matchesSearch && matchesGenre;
-    });
-
-    if (sortBy !== "none") {
-      filtered = filtered.sort((a, b) => {
-        let aValue: string | number;
-        let bValue: string | number;
-
-        switch (sortBy) {
-          case "rating":
-            aValue = Number(a.imdbRating) || 0;
-            bValue = Number(b.imdbRating) || 0;
-            break;
-          case "year":
-            aValue = Number(a.year) || 0;
-            bValue = Number(b.year) || 0;
-            break;
-          case "title":
-            aValue = a.title.toLowerCase();
-            bValue = b.title.toLowerCase();
-            break;
-          default:
-            return 0;
-        }
-
-        if (sortDirection === "asc") {
-          return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-        } else {
-          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-        }
+        return matchesSearch && matchesGenre;
       });
-    }
 
-    return filtered;
-  }, [movies, searchQuery, selectedGenres, sortBy, sortDirection]) || [];
+      if (sortBy !== "none") {
+        filtered = filtered.sort((a, b) => {
+          let aValue: string | number;
+          let bValue: string | number;
+
+          switch (sortBy) {
+            case "rating":
+              aValue = Number(a.imdbRating) || 0;
+              bValue = Number(b.imdbRating) || 0;
+              break;
+            case "year":
+              aValue = Number(a.year) || 0;
+              bValue = Number(b.year) || 0;
+              break;
+            case "title":
+              aValue = a.title.toLowerCase();
+              bValue = b.title.toLowerCase();
+              break;
+            default:
+              return 0;
+          }
+
+          if (sortDirection === "asc") {
+            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+          } else {
+            return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+          }
+        });
+      }
+
+      return filtered;
+    }, [movies, searchQuery, selectedGenres, sortBy, sortDirection]) || [];
 
   // Removed unused toggleSortDirection and handleSortChange functions
 

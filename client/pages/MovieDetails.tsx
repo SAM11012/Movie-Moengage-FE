@@ -47,8 +47,14 @@ export default function MovieDetailsPage() {
         setMovie(response.data.data);
         toast.success("Movie details loaded!");
       } catch (err: any) {
-        setError(err.message || "Unknown error");
-        toast.error(err.message || "Failed to load movie details.");
+        setError(
+          err?.response?.data?.message || err.message || "Unknown error",
+        );
+        toast.error(
+          err?.response?.data?.message ||
+            err.message ||
+            "Failed to load movie details.",
+        );
       } finally {
         setLoading(false);
       }
