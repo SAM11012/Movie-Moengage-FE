@@ -8,6 +8,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import ScreenLoader from "@/components/ScreenLoader";
 import { API_ENDPOINTS } from "../lib/config";
 import { toast } from "sonner";
+import dummyposter from "../assets/dummyposter.jpg";
 
 interface Movie {
   imdbID: string;
@@ -89,7 +90,7 @@ export default function MovieDetailsPage() {
       {/* Hero Section */}
       <div className="relative h-[60vh] overflow-hidden">
         <img
-          src={movie.poster}
+          src={movie.poster||dummyposter}
           alt={movie.title}
           className="w-full h-full object-cover blur-md"
         />
@@ -183,7 +184,7 @@ export default function MovieDetailsPage() {
           {/* Poster */}
           <div className="lg:col-span-1">
             <img
-              src={movie.poster}
+              src={movie.poster || dummyposter}
               alt={movie.title}
               className="w-full max-w-sm mx-auto rounded-lg shadow-2xl"
             />
